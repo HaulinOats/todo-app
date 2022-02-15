@@ -1,4 +1,4 @@
-import { FC, useState, KeyboardEvent, useEffect, ChangeEvent } from "react";
+import { FC, useState, KeyboardEvent, useEffect, ChangeEvent, useRef } from "react";
 import styles from '../styles/todo.module.css';
 
 interface Todo {
@@ -8,6 +8,8 @@ interface Todo {
 }
 
 const Todo:FC = () => {
+  const todoLabelInput = useRef<HTMLInputElement>(null);
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoView, setTodoView] = useState('all');
 
@@ -21,6 +23,7 @@ const Todo:FC = () => {
   useEffect(()=>{
     localStorage.setItem('todos', JSON.stringify(todos));
     console.log({todos});
+    todoLabelInput.current?.focus();
   },[todos])
 
   //store todoView in localStorage on update
@@ -48,10 +51,6 @@ const Todo:FC = () => {
     setTodos(tempTodos);
   }
 
-  const updateTodo = (e:KeyboardEvent, idx:number) => {
-    
-  }
-
   const toggleTodoCompleted = (idx:number) => {
     let tempTodos = [...todos];
     tempTodos[idx].completed = !tempTodos[idx].completed;
@@ -66,6 +65,24 @@ const Todo:FC = () => {
   const makeEditable = (idx:number) => {
     let tempTodos = [...todos];
     tempTodos[idx].isEditing = true;
+    setTodos(tempTodos);
+  }
+
+  const todoLabelKeyDown = (e:KeyboardEvent, idx:number) => {
+    if(e.key === 'Enter'){
+      (e.target as HTMLInputElement).blur();
+    }
+  }
+
+  const todoLabelBlur = (idx:number) => {
+    let tempTodos = [...todos];
+    tempTodos[idx].isEditing = false;
+    setTodos(tempTodos);
+  }
+
+  const updateTodoLabel = (e:React.ChangeEvent<HTMLInputElement>, idx:number) => {
+    let tempTodos = [...todos];
+    tempTodos[idx].label = (e.target as HTMLInputElement).value;
     setTodos(tempTodos);
   }
 
@@ -91,13 +108,27 @@ const Todo:FC = () => {
         </header>
         <ul className={styles.todo_list}>
           {todos.filter(todoViewFilter).map((todo, idx) => {return(
-            <li key={idx}>
+            <li key={idx} className={todo.isEditing ? styles.single_todo_editing : styles.single_todo}>
               <div className={styles.completed_toggle}>
                 <input id={`completed_toggle_${idx}`} type="checkbox" onChange={e => toggleTodoCompleted(idx)} checked={todo.completed} />
                 <label htmlFor={`completed_toggle_${idx}`}></label>
               </div>
-              <label onDoubleClick={e => makeEditable(idx)} className={styles.todo_main_label + " " + (todo.completed ? styles.todo_main_label_completed : '')} onKeyDown={e => updateTodo(e, idx)} contentEditable={todo.isEditing ? true : false}>{todo.label}</label>
-              <button className={styles.delete_todo} onClick={e => deleteTodo(idx)}></button>
+              {!todo.isEditing ?
+                <div className={styles.todo_right_container}>
+                  <label 
+                    onDoubleClick={() => makeEditable(idx)} 
+                    className={styles.todo_main_label + " " + (todo.completed ? styles.todo_main_label_completed : '')}>{todo.label}</label>
+                  <button className={styles.delete_todo} onClick={e => deleteTodo(idx)}></button>
+                </div>
+                :<input 
+                  type="text" 
+                  ref={todoLabelInput} 
+                  className={styles.todo_main_label_input} 
+                  value={todo.label} 
+                  onBlur={() => todoLabelBlur(idx)}
+                  onKeyDown={e => todoLabelKeyDown(e, idx)}
+                  onChange={e => updateTodoLabel(e, idx)} />
+              }
             </li>
           )})}
         </ul>
