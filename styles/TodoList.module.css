@@ -1,0 +1,95 @@
+.todo_list_outer {
+  width:550px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size:14px;
+  margin-bottom:50px;
+}
+.title {
+  font-size:100px;
+  text-align:center;
+  margin:0 auto;
+}
+.todo_list_main {
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%), 0 25px 50px 0 rgb(0 0 0 / 10%);
+}
+.header {
+  display:flex;
+  box-shadow: inset 0 -2px 1px rgb(0 0 0 / 3%);
+  background:white;
+}
+.new_todo_input {
+  outline:none;
+  width:100%;
+  border:none;
+  font-size:24px;
+  background:none;
+}
+.new_todo_input::placeholder {
+  color:lightgrey;
+  font-style:italic;
+}
+.new_todo_selectAll {
+  cursor:default;
+  transform: rotate(90deg);
+  padding: 0px 20px;
+  font-size: 22px;
+  user-select: none;
+}
+.new_todo_selectAll_active {
+  color:#737373;
+}
+.todo_list {
+  list-style-type:none;
+  padding:0;
+  margin:0;
+  background:white;
+}
+.footer {
+  display:flex;
+  justify-content: space-between;
+  padding:10px;
+  color: #777;
+  background:white;
+}
+.footer a {
+  text-decoration:none;
+}
+.footer span:hover {
+  text-decoration:underline;
+}
+.filters {
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+.filters li {
+  display:inline;
+  padding:0 5px;
+  margin:0 3px;
+}
+.filters a {
+  cursor:pointer;
+}
+.active_filter_view {
+  border:solid thin grey;
+  border-radius:3px;
+}
+.filters li:hover {
+  border:solid thin lightgrey;
+}
+.stack_container {
+  box-shadow: 3px 5px 10px -5px black;
+}
+.stack_1,
+.stack_2 {
+  margin:0 auto;
+  height:5px;
+  background:white;
+  box-shadow: inset 0px 2px 5px -4px black;
+}
+.stack_1 {
+  width:98%;
+}
+.stack_2 {
+  width:96%;
+}
