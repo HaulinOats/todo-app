@@ -8,28 +8,24 @@ export default function handler(
 ) {
   res.status(200).json([
     {
-      id: createUniqueTodoId(),
+      id: 1,
       label: 'First Todo Item',
       isCompleted: false
     },
     {
-      id: createUniqueTodoId(),
+      id: 2,
       label: 'Second Todo Item',
       isCompleted: false
     },
     {
-      id: createUniqueTodoId(),
+      id: 3,
       label: 'Third Todo Item',
       isCompleted: false
     },
     {
-      id: createUniqueTodoId(),
+      id: 4,
       label: 'Fourth Todo Item',
       isCompleted: false
     },
   ])
-}
-
-function createUniqueTodoId() {
-  return Date.now() + Math.random();
 }

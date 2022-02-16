@@ -25,6 +25,7 @@ describe('Initial App Load', () => {
   })
 
   it('Delete todo', () => {
+    // Forced due to the delete icon being applied on CSS hover event
     cy.get('[data-test-id="delete_todo"]').eq(0).trigger('click', { force: true })
   })
 })
