@@ -37,8 +37,8 @@ const Todo: FC = () => {
   }
 
   const addTodo = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      const target = e.target as HTMLInputElement;
+    const target = e.target as HTMLInputElement;
+    if (e.key === 'Enter' && target.value.length) {
       let tempTodos = [...todos, {
         id: Date.now(),
         label: target.value,
@@ -113,11 +113,18 @@ const Todo: FC = () => {
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>
-      <button className={styles.get_todos_btn} onClick={fetchTodos}>&#8594; Import Todos</button>
+      <button
+        data-test-id="get_todos_btn"
+        className={styles.get_todos_btn}
+        onClick={fetchTodos}>&#8594; Import Todos</button>
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
           <p onClick={toggleSelectAll} className={styles.new_todo_selectAll + " " + (todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : '')}>&#10095;</p>
-          <input type="text" placeholder="What needs to be done?" className={styles.new_todo_input} onKeyDown={e => addTodo(e)} />
+          <input type="text"
+            data-test-id="new_todo_input"
+            placeholder="What needs to be done?"
+            className={styles.new_todo_input}
+            onKeyDown={e => addTodo(e)} />
         </header>
         <ul className={styles.todo_list}>
           {todos.filter(todoViewFilter).map(todo =>
@@ -133,14 +140,14 @@ const Todo: FC = () => {
           )}
         </ul>
         <footer className={styles.footer}>
-          <span>{todos.filter(todo => !todo.isCompleted).length} item{todos.filter(todo => !todo.isCompleted).length !== 1 ? 's' : ''} left</span>
+          <span className={styles.left_cont}>{todos.filter(todo => !todo.isCompleted).length} item{todos.filter(todo => !todo.isCompleted).length !== 1 ? 's' : '\u00A0'} left</span>
           <ul className={styles.filters}>
             <li className={todoView === 'all' ? styles.active_filter_view : ''} onClick={e => setTodoView('all')}><a>All</a></li>
             <li className={todoView === 'active' ? styles.active_filter_view : ''} onClick={e => setTodoView('active')}><a>Active</a></li>
             <li className={todoView === 'completed' ? styles.active_filter_view : ''} onClick={e => setTodoView('completed')}><a>Completed</a></li>
           </ul>
           {!todos.length}
-          <span onClick={e => clearCompletedTodos()}><a>Clear Completed</a></span>
+          <span className={styles.right_cont} onClick={e => clearCompletedTodos()}><a>Clear Completed</a></span>
         </footer>
       </div>
       <div className={styles.stack_container}>

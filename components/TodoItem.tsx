@@ -10,14 +10,7 @@ interface Props {
 }
 
 const TodoItem: FC<Props> = (props) => {
-  const todoLabelInputRef = useRef<HTMLInputElement>(null);
-
   const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    //auto-select label input when editing a field
-    todoLabelInputRef.current?.focus();
-  }, [isEditing]);
 
   const todoLabelKeyDown = (e: React.KeyboardEvent): void => {
     if (e.key === 'Enter') {
@@ -28,19 +21,28 @@ const TodoItem: FC<Props> = (props) => {
   return (
     <li className={isEditing ? styles.single_todo_editing : styles.single_todo}>
       <div className={styles.completed_toggle}>
-        <input id={`completed_toggle_${props.todoItem.id}`} type="checkbox" onChange={e => props.toggleIsCompleted(props.todoItem.id)} checked={props.todoItem.isCompleted} />
-        <label htmlFor={`completed_toggle_${props.todoItem.id}`}></label>
+        <input
+          id={`completed_toggle_${props.todoItem.id}`}
+          type="checkbox"
+          onChange={e => props.toggleIsCompleted(props.todoItem.id)}
+          checked={props.todoItem.isCompleted} />
+        <label htmlFor={`completed_toggle_${props.todoItem.id}`} data-test-id="completed_toggle"></label>
       </div>
       {!isEditing ?
         <div className={styles.todo_right_container}>
           <label
             onDoubleClick={e => setIsEditing(!isEditing)}
+            data-test-id="todo_main_label"
             className={styles.todo_main_label + " " + (props.todoItem.isCompleted ? styles.todo_main_label_completed : '')}>{props.todoItem.label}</label>
-          <button className={styles.delete_todo} onClick={e => props.deleteTodo(props.todoItem.id)}></button>
+          <button
+            data-test-id="delete_todo"
+            className={styles.delete_todo}
+            onClick={e => props.deleteTodo(props.todoItem.id)}></button>
         </div>
         : <input
+          autoFocus
           type="text"
-          ref={todoLabelInputRef}
+          data-test-id="todo_main_label_input"
           className={styles.todo_main_label_input}
           value={props.todoItem.label}
           onBlur={() => setIsEditing(!isEditing)}

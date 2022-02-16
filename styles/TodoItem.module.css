@@ -10,6 +10,9 @@
 .single_todo:hover .delete_todo::after {
   content:"×";
 }
+.delete_todo:hover {
+  color:rgb(182, 110, 110);
+}
 .single_todo_editing .completed_toggle{
   visibility: hidden;
 }
@@ -57,7 +60,6 @@
   top: 0;
   width: 28px;
 }
-
 .completed_toggle label:after {
   border: 2px solid #60c3b0;
   border-top: none;
@@ -71,11 +73,9 @@
   transform: rotate(-45deg);
   width: 12px;
 }
-
 .completed_toggle input[type="checkbox"] {
   visibility: hidden;
 }
-
 .completed_toggle input[type="checkbox"]:checked + label:after {
   opacity: 1;
 }
