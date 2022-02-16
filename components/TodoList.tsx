@@ -133,7 +133,7 @@ const Todo: FC = () => {
           )}
         </ul>
         <footer className={styles.footer}>
-          <span>{todos.filter(todo => !todo.isCompleted).length} items left</span>
+          <span>{todos.filter(todo => !todo.isCompleted).length} item{todos.filter(todo => !todo.isCompleted).length !== 1 ? 's' : ''} left</span>
           <ul className={styles.filters}>
             <li className={todoView === 'all' ? styles.active_filter_view : ''} onClick={e => setTodoView('all')}><a>All</a></li>
             <li className={todoView === 'active' ? styles.active_filter_view : ''} onClick={e => setTodoView('active')}><a>Active</a></li>
