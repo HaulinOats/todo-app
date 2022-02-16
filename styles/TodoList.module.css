@@ -4,6 +4,20 @@
   font-size:14px;
   margin-bottom:50px;
 }
+.get_todos_btn {
+  background: #81c787;
+  color: cornsilk;
+  font-weight: bold;
+  padding: 5px;
+  border: none;
+  box-shadow: 1px 1px 2px black;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.get_todos_btn:active {
+  box-shadow:none;
+}
 .title {
   font-size:100px;
   text-align:center;

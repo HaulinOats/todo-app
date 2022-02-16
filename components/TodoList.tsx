@@ -1,4 +1,4 @@
-import { FC, useState, KeyboardEvent, useEffect, ChangeEvent, useRef } from "react";
+import { FC, useState, KeyboardEvent, useEffect } from "react";
 import styles from '../styles/TodoList.module.css';
 import TodoItem from "./TodoItem";
 import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
@@ -17,18 +17,24 @@ const Todo: FC = () => {
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
-    console.log({ todos });
   }, [todos])
 
   useEffect(() => {
     localStorage.setItem('todoView', todoView);
-    console.log({ todoView });
   }, [todoView])
 
   useEffect(() => {
     localStorage.setItem('allSelected', JSON.stringify(allSelected));
-    console.log({ allSelected });
   }, [allSelected])
+
+  const fetchTodos = () => {
+    fetch('/api/getTodos')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setTodos(data);
+      });
+  }
 
   const addTodo = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -36,8 +42,7 @@ const Todo: FC = () => {
       let tempTodos = [...todos, {
         id: Date.now(),
         label: target.value,
-        isCompleted: false,
-        isEditing: false
+        isCompleted: false
       }]
       setTodos(tempTodos);
       target.value = '';
@@ -55,7 +60,7 @@ const Todo: FC = () => {
     setTodos(tempTodos);
   }
 
-  const toggleTodoCompleted = (todoId: number): void => {
+  const toggleIsCompleted = (todoId: number): void => {
     let tempTodos = [...todos];
     tempTodos.some(todo => {
       if (todo.id === todoId) {
@@ -68,17 +73,6 @@ const Todo: FC = () => {
 
   const clearCompletedTodos = () => {
     let tempTodos = todos.filter(todo => !todo.isCompleted);
-    setTodos(tempTodos);
-  }
-
-  const toggleEditable = (todoId: number): void => {
-    let tempTodos = [...todos];
-    tempTodos.some(todo => {
-      if (todo.id === todoId) {
-        todo.isEditing = !todo.isEditing;
-        return;
-      }
-    });
     setTodos(tempTodos);
   }
 
@@ -119,6 +113,7 @@ const Todo: FC = () => {
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>
+      <button className={styles.get_todos_btn} onClick={fetchTodos}>&#8594; Import Todos</button>
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
           <p onClick={toggleSelectAll} className={styles.new_todo_selectAll + " " + (todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : '')}>&#10095;</p>
@@ -130,8 +125,7 @@ const Todo: FC = () => {
               {...{
                 key: todo.id,
                 todoItem: todo,
-                toggleTodoCompleted,
-                toggleEditable,
+                toggleIsCompleted,
                 deleteTodo,
                 updateTodoLabel
               }}
