@@ -53,6 +53,7 @@
 }
 .footer a {
   text-decoration:none;
+  cursor:pointer;
 }
 .footer span:hover {
   text-decoration:underline;

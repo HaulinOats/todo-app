@@ -3,51 +3,51 @@ import styles from '../styles/TodoList.module.css';
 import TodoItem from "./TodoItem";
 import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
 
-const Todo:FC = () => {
+const Todo: FC = () => {
   const [todos, setTodos] = useState<TodoItemType[]>([]);
   const [todoView, setTodoView] = useState('all');
   const [allSelected, setAllSelected] = useState(false);
 
   //get state from localStorage on mount
-  useEffect(()=>{
+  useEffect(() => {
     setTodos(JSON.parse(localStorage.getItem('todos') as string) || []);
     setTodoView(localStorage.getItem('todoView') as string || 'all');
     setAllSelected(JSON.parse(localStorage.getItem('allSelected') as string) || false);
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
-    console.log({todos});
-  },[todos])
+    console.log({ todos });
+  }, [todos])
 
-  useEffect(()=>{
+  useEffect(() => {
     localStorage.setItem('todoView', todoView);
-    console.log({todoView});
-  },[todoView])
-  
-  useEffect(()=>{
-    localStorage.setItem('allSelected', JSON.stringify(allSelected));
-    console.log({allSelected});
-  },[allSelected])
+    console.log({ todoView });
+  }, [todoView])
 
-  const addTodo = (e:KeyboardEvent) => {
-    if(e.key === 'Enter') {
+  useEffect(() => {
+    localStorage.setItem('allSelected', JSON.stringify(allSelected));
+    console.log({ allSelected });
+  }, [allSelected])
+
+  const addTodo = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
       const target = e.target as HTMLInputElement;
       let tempTodos = [...todos, {
-        id:Date.now(),
-        label:target.value,
-        isCompleted:false,
-        isEditing:false
+        id: Date.now(),
+        label: target.value,
+        isCompleted: false,
+        isEditing: false
       }]
       setTodos(tempTodos);
       target.value = '';
     }
   }
 
-  const deleteTodo = (todoId:number) => {
+  const deleteTodo = (todoId: number) => {
     let tempTodos = [...todos];
     tempTodos.some((todo, idx) => {
-      if(todo.id === todoId) {
+      if (todo.id === todoId) {
         tempTodos.splice(idx, 1);
         return;
       }
@@ -55,10 +55,10 @@ const Todo:FC = () => {
     setTodos(tempTodos);
   }
 
-  const toggleTodoCompleted = (todoId:number):void => {
+  const toggleTodoCompleted = (todoId: number): void => {
     let tempTodos = [...todos];
     tempTodos.some(todo => {
-      if(todo.id === todoId) {
+      if (todo.id === todoId) {
         todo.isCompleted = !todo.isCompleted;
         return;
       }
@@ -71,10 +71,10 @@ const Todo:FC = () => {
     setTodos(tempTodos);
   }
 
-  const toggleEditable = (todoId:number):void => {
+  const toggleEditable = (todoId: number): void => {
     let tempTodos = [...todos];
     tempTodos.some(todo => {
-      if(todo.id === todoId) {
+      if (todo.id === todoId) {
         todo.isEditing = !todo.isEditing;
         return;
       }
@@ -82,10 +82,10 @@ const Todo:FC = () => {
     setTodos(tempTodos);
   }
 
-  const updateTodoLabel = (e:React.ChangeEvent, todoId:number):void => {
+  const updateTodoLabel = (e: React.ChangeEvent, todoId: number): void => {
     let tempTodos = [...todos];
     tempTodos.some(todo => {
-      if(todo.id === todoId) {
+      if (todo.id === todoId) {
         todo.label = (e.target as HTMLInputElement).value
         return;
       }
@@ -93,15 +93,15 @@ const Todo:FC = () => {
     setTodos(tempTodos);
   }
 
-  const todoViewFilter = (todo:TodoItemType) => {
-    switch(todoView){
+  const todoViewFilter = (todo: TodoItemType) => {
+    switch (todoView) {
       case 'all':
         return todo;
       case 'active':
-        if(!todo.isCompleted) return todo;
+        if (!todo.isCompleted) return todo;
         break;
       case 'completed':
-        if(todo.isCompleted) return todo;
+        if (todo.isCompleted) return todo;
         break;
     }
   }
@@ -122,18 +122,20 @@ const Todo:FC = () => {
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
           <p onClick={toggleSelectAll} className={styles.new_todo_selectAll + " " + (todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : '')}>&#10095;</p>
-          <input type="text" placeholder="What needs to be done?" className={styles.new_todo_input} onKeyDown={e => addTodo(e)}/>
+          <input type="text" placeholder="What needs to be done?" className={styles.new_todo_input} onKeyDown={e => addTodo(e)} />
         </header>
         <ul className={styles.todo_list}>
-          {todos.filter(todoViewFilter).map(todo => 
-            <TodoItem 
-              key={todo.id} 
-              todoItem={todo}
-              todoId={todo.id}
-              toggleTodoCompleted={toggleTodoCompleted}
-              toggleEditable={toggleEditable}
-              deleteTodo={deleteTodo}
-              updateTodoLabel={updateTodoLabel} />
+          {todos.filter(todoViewFilter).map(todo =>
+            <TodoItem
+              {...{
+                key: todo.id,
+                todoItem: todo,
+                toggleTodoCompleted,
+                toggleEditable,
+                deleteTodo,
+                updateTodoLabel
+              }}
+            />
           )}
         </ul>
         <footer className={styles.footer}>
@@ -141,7 +143,7 @@ const Todo:FC = () => {
           <ul className={styles.filters}>
             <li className={todoView === 'all' ? styles.active_filter_view : ''} onClick={e => setTodoView('all')}><a>All</a></li>
             <li className={todoView === 'active' ? styles.active_filter_view : ''} onClick={e => setTodoView('active')}><a>Active</a></li>
-            <li className={todoView === 'completed' ? styles.active_filter_view : ''} onClick={e => setTodoView('completed')}><a>Completed</a></li>  
+            <li className={todoView === 'completed' ? styles.active_filter_view : ''} onClick={e => setTodoView('completed')}><a>Completed</a></li>
           </ul>
           {!todos.length}
           <span onClick={e => clearCompletedTodos()}><a>Clear Completed</a></span>
