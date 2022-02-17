@@ -17,7 +17,7 @@ const Todo: FC = () => {
 
   useEffect(() => {
     localStorage.setItem('todoView', JSON.stringify(todoView));
-  }, [todos])
+  }, [todoView])
 
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
