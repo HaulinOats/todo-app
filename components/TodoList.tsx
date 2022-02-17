@@ -5,23 +5,23 @@ import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
 
 const Todo: FC = () => {
   const [todos, setTodos] = useState<TodoItemType[]>([]);
-  const [todoView, setTodoView] = useState('all');
   const [allSelected, setAllSelected] = useState(false);
+  const [todoView, setTodoView] = useState('all');
 
   //get state from localStorage on mount
   useEffect(() => {
-    setTodos(JSON.parse(localStorage.getItem('todos') as string) || []);
     setTodoView(localStorage.getItem('todoView') as string || 'all');
+    setTodos(JSON.parse(localStorage.getItem('todos') as string) || []);
     setAllSelected(JSON.parse(localStorage.getItem('allSelected') as string) || false);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
+    localStorage.setItem('todoView', JSON.stringify(todoView));
   }, [todos])
 
   useEffect(() => {
-    localStorage.setItem('todoView', todoView);
-  }, [todoView])
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos])
 
   useEffect(() => {
     localStorage.setItem('allSelected', JSON.stringify(allSelected));
@@ -88,14 +88,14 @@ const Todo: FC = () => {
 
   const todoViewFilter = (todo: TodoItemType) => {
     switch (todoView) {
-      case 'all':
-        return todo;
       case 'active':
         if (!todo.isCompleted) return todo;
         break;
       case 'completed':
         if (todo.isCompleted) return todo;
         break;
+      default:
+        return todo;
     }
   }
 
@@ -118,7 +118,9 @@ const Todo: FC = () => {
         onClick={fetchTodos}>&#8594; Import Todos</button>
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
-          <p data-test-id="new_todo_selectAll" onClick={toggleSelectAll} className={styles.new_todo_selectAll + " " + (todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : '')}>&#10095;</p>
+          <p data-test-id="new_todo_selectAll"
+            onClick={toggleSelectAll}
+            className={`${styles.new_todo_selectAll} ${todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : ''}`}>&#10095;</p>
           <input type="text"
             data-test-id="new_todo_input"
             placeholder="What needs to be done?"
@@ -141,12 +143,11 @@ const Todo: FC = () => {
         <footer className={styles.footer}>
           <span className={styles.left_cont}>{todos.filter(todo => !todo.isCompleted).length} item{todos.filter(todo => !todo.isCompleted).length !== 1 ? 's' : '\u00A0'} left</span>
           <ul className={styles.filters}>
-            <li className={todoView === 'all' ? styles.active_filter_view : ''} onClick={e => setTodoView('all')}><a>All</a></li>
-            <li className={todoView === 'active' ? styles.active_filter_view : ''} onClick={e => setTodoView('active')}><a>Active</a></li>
-            <li className={todoView === 'completed' ? styles.active_filter_view : ''} onClick={e => setTodoView('completed')}><a>Completed</a></li>
+            <li className={todoView === 'all' ? styles.active_filter_view : ''} onClick={() => setTodoView('all')}><a>All</a></li>
+            <li className={todoView === 'active' ? styles.active_filter_view : ''} onClick={() => setTodoView('active')}><a>Active</a></li>
+            <li className={todoView === 'completed' ? styles.active_filter_view : ''} onClick={() => setTodoView('completed')}><a>Completed</a></li>
           </ul>
-          {!todos.length}
-          <span className={styles.right_cont} onClick={e => clearCompletedTodos()}><a>Clear Completed</a></span>
+          <span className={`${styles.right_cont} ${!todos.filter(todo => todo.isCompleted).length ? styles.right_cont_hidden : ''}`} onClick={e => clearCompletedTodos()}><a>Clear Completed</a></span>
         </footer>
       </div>
       <div className={styles.stack_container}>

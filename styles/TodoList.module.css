@@ -3,6 +3,7 @@
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size:14px;
   margin-bottom:50px;
+  color:rgba(175, 47, 47, 0.15);
 }
 .get_todos_btn {
   background: #81c787;
@@ -93,10 +94,13 @@
   border:solid thin grey;
   border-radius:3px;
 }
-.footer .left_cont {
+.left_cont {
   cursor:default;
 }
-.footer .right_cont:hover {
+.right_cont_hidden {
+  visibility: hidden;
+}
+.right_cont:hover {
   text-decoration: underline;
 }
 .stack_container {

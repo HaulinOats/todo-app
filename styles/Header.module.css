@@ -1,0 +1,23 @@
+.header {
+  padding:5px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  background:black;
+  color:white;
+}
+.header h1 {
+  margin:0;
+  font-size:20px;
+}
+.header ul {
+  list-style-type:none;
+}
+.header ul li {
+  display:inline-block;
+  padding:0 10px;
+  border-left:solid thin white;
+}
+.header ul li:first-child {
+  border:none;
+}
