@@ -31,7 +31,6 @@ const Todo: FC = () => {
     fetch('/api/getTodos')
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         setTodos(data);
       });
   }
@@ -119,7 +118,7 @@ const Todo: FC = () => {
         onClick={fetchTodos}>&#8594; Import Todos</button>
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
-          <p onClick={toggleSelectAll} className={styles.new_todo_selectAll + " " + (todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : '')}>&#10095;</p>
+          <p data-test-id="new_todo_selectAll" onClick={toggleSelectAll} className={styles.new_todo_selectAll + " " + (todos.every(todo => todo.isCompleted) ? styles.new_todo_selectAll_active : '')}>&#10095;</p>
           <input type="text"
             data-test-id="new_todo_input"
             placeholder="What needs to be done?"

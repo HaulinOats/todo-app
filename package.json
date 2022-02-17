@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "test": "concurrently \"next dev\" \"cypress open\"",
     "start": "next start",
     "lint": "next lint",
     "cypress": "cypress open",
@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/node": "17.0.17",
     "@types/react": "17.0.39",
+    "concurrently": "^7.0.0",
     "cypress": "^9.5.0",
     "eslint": "8.9.0",
     "eslint-config-next": "12.0.10",
