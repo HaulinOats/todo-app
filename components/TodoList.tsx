@@ -1,4 +1,4 @@
-import { FC, useState, KeyboardEvent, useEffect } from "react";
+import { FC, useState, KeyboardEvent, useEffect, KeyboardEventHandler } from "react";
 import styles from '../styles/TodoList.module.css';
 import TodoItem from "./TodoItem";
 import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
@@ -15,8 +15,9 @@ const Todo: FC = () => {
     setAllSelected(JSON.parse(localStorage.getItem('allSelected') as string) || false);
   }, []);
 
+  //Simpler way of doing this? Perhaps inside a single useEffect call
   useEffect(() => {
-    localStorage.setItem('todoView', JSON.stringify(todoView));
+    localStorage.setItem('todoView', todoView);
   }, [todoView])
 
   useEffect(() => {
@@ -35,28 +36,24 @@ const Todo: FC = () => {
       });
   }
 
-  const addTodo = (e: KeyboardEvent) => {
-    const target = e.target as HTMLInputElement;
-    if (e.key === 'Enter' && target.value.length) {
-      let tempTodos = [...todos, {
-        id: Date.now(),
-        label: target.value,
-        isCompleted: false
-      }]
-      setTodos(tempTodos);
-      target.value = '';
+  const addTodo: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    const target = e.currentTarget;
+
+    if (e.key !== 'Enter' || !target.value.trim().length) {
+      return;
     }
+
+    setTodos([...todos, {
+      id: Date.now(),
+      label: target.value,
+      isCompleted: false
+    }])
+
+    target.value = '';
   }
 
-  const deleteTodo = (todoId: number) => {
-    let tempTodos = [...todos];
-    tempTodos.some((todo, idx) => {
-      if (todo.id === todoId) {
-        tempTodos.splice(idx, 1);
-        return;
-      }
-    });
-    setTodos(tempTodos);
+  const deleteTodo = (todoId: number):void => {
+    setTodos(todos.filter((todo) => todo.id !== todoId))
   }
 
   const toggleIsCompleted = (todoId: number): void => {
@@ -71,15 +68,14 @@ const Todo: FC = () => {
   }
 
   const clearCompletedTodos = () => {
-    let tempTodos = todos.filter(todo => !todo.isCompleted);
-    setTodos(tempTodos);
+    setTodos(todos.filter(todo => !todo.isCompleted));
   }
 
-  const updateTodoLabel = (e: React.ChangeEvent, todoId: number): void => {
+  const updateTodoLabel = (e: React.ChangeEvent<HTMLInputElement>, todoId: number): void => {
     let tempTodos = [...todos];
     tempTodos.some(todo => {
       if (todo.id === todoId) {
-        todo.label = (e.target as HTMLInputElement).value
+        todo.label = e.currentTarget.value;
         return;
       }
     });
@@ -88,24 +84,24 @@ const Todo: FC = () => {
 
   const todoViewFilter = (todo: TodoItemType) => {
     switch (todoView) {
+      case 'all':
+        return todo;
       case 'active':
         if (!todo.isCompleted) return todo;
         break;
       case 'completed':
         if (todo.isCompleted) return todo;
         break;
-      default:
-        return todo;
+      //preferred default break?
     }
   }
 
   const toggleSelectAll = () => {
-    let tempAllSelected = !allSelected;
     let tempTodos = [...todos];
     tempTodos.forEach(todo => {
-      todo.isCompleted = tempAllSelected;
+      todo.isCompleted = !allSelected;
     })
-    setAllSelected(tempAllSelected);
+    setAllSelected(!allSelected);
     setTodos(tempTodos);
   }
 
@@ -125,7 +121,7 @@ const Todo: FC = () => {
             data-test-id="new_todo_input"
             placeholder="What needs to be done?"
             className={styles.new_todo_input}
-            onKeyDown={e => addTodo(e)} />
+            onKeyDown={addTodo} />
         </header>
         <ul className={styles.todo_list}>
           {todos.filter(todoViewFilter).map(todo =>
@@ -143,9 +139,21 @@ const Todo: FC = () => {
         <footer className={styles.footer}>
           <span className={styles.left_cont}>{todos.filter(todo => !todo.isCompleted).length} item{todos.filter(todo => !todo.isCompleted).length !== 1 ? 's' : '\u00A0'} left</span>
           <ul className={styles.filters}>
-            <li className={todoView === 'all' ? styles.active_filter_view : ''} onClick={() => setTodoView('all')}><a>All</a></li>
-            <li className={todoView === 'active' ? styles.active_filter_view : ''} onClick={() => setTodoView('active')}><a>Active</a></li>
-            <li className={todoView === 'completed' ? styles.active_filter_view : ''} onClick={() => setTodoView('completed')}><a>Completed</a></li>
+            <li className={todoView === 'all' ? styles.active_filter_view : ''}>
+                <button type="button" onClick={() => setTodoView('all')}>
+                  All
+                </button>
+            </li>
+            <li className={todoView === 'active' ? styles.active_filter_view : ''}>
+              <button type="button" onClick={() => setTodoView('active')}>
+                Active
+              </button>
+            </li>
+            <li className={todoView === 'completed' ? styles.active_filter_view : ''}>
+              <button type="button" onClick={() => setTodoView('completed')}>
+                Completed
+              </button>
+            </li>
           </ul>
           <span className={`${styles.right_cont} ${!todos.filter(todo => todo.isCompleted).length ? styles.right_cont_hidden : ''}`} onClick={e => clearCompletedTodos()}><a>Clear Completed</a></span>
         </footer>

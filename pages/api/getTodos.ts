@@ -1,11 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
 import type { TodoItem } from '../../types/TodoItem.type';
+import type { NextApiHandler } from 'next';
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<TodoItem[]>
-) {
+//take note to use NextApiHandler
+const handler: NextApiHandler<TodoItem[]> = (_req, res) => {
   res.status(200).json([
     {
       id: 1,
@@ -29,3 +27,5 @@ export default function handler(
     },
   ])
 }
+
+export default handler;

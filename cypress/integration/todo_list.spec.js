@@ -1,6 +1,6 @@
 describe('Initial App Load', () => {
   it('successfully loads', () => {
-    cy.visit('/');
+    cy.visit('/todo-list');
   })
 
   it('Get todos from server', () => {

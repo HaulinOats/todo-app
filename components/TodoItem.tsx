@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, KeyboardEventHandler, useEffect, useRef, useState } from "react";
 import { TodoItem as TodoItemType } from "../types/TodoItem.type";
 import styles from '../styles/TodoItem.module.css';
 
@@ -6,15 +6,15 @@ interface Props {
   todoItem: TodoItemType
   toggleIsCompleted: (todoId: number) => void
   deleteTodo: (todoId: number) => void
-  updateTodoLabel: (e: ChangeEvent, todoId: number) => void
+  updateTodoLabel: (e: React.ChangeEvent<HTMLInputElement>, todoId: number) => void
 }
 
 const TodoItem: FC<Props> = (props) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const todoLabelKeyDown = (e: React.KeyboardEvent): void => {
+  const todoLabelKeyDown:KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === 'Enter') {
-      (e.target as HTMLInputElement).blur();
+      e.currentTarget.blur();
     }
   }
 
@@ -31,7 +31,7 @@ const TodoItem: FC<Props> = (props) => {
       {!isEditing ?
         <div className={styles.todo_right_container}>
           <label
-            onDoubleClick={e => setIsEditing(!isEditing)}
+            onDoubleClick={() => setIsEditing(!isEditing)}
             data-test-id="todo_main_label"
             className={styles.todo_main_label + " " + (props.todoItem.isCompleted ? styles.todo_main_label_completed : '')}>{props.todoItem.label}</label>
           <button
@@ -46,7 +46,7 @@ const TodoItem: FC<Props> = (props) => {
           className={styles.todo_main_label_input}
           value={props.todoItem.label}
           onBlur={() => setIsEditing(!isEditing)}
-          onKeyDown={e => todoLabelKeyDown(e)}
+          onKeyDown={todoLabelKeyDown}
           onChange={e => props.updateTodoLabel(e, props.todoItem.id)} />}
     </li>
   )
