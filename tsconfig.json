@@ -17,7 +17,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "sourceMap": true,
+    "outDir": "dist",
+  },
+  //Needed to compile/run Typescript from command line per Prisma tutorial
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   },
   "include": [
     "next-env.d.ts",

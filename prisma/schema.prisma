@@ -1,0 +1,15 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Todo {
+  id           Int     @id @default(autoincrement())
+  label        String  @db.VarChar(255)
+  is_completed Boolean @default(false)
+}
