@@ -1,0 +1,22 @@
+.error_message_outer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #d3d3d359;
+  border-radius: 5px;
+  padding: 6px;
+  box-shadow: 1px 3px 9px -7px black;
+  margin-bottom: 8px;
+}
+.error_message_outer p {
+  margin: 0;
+}
+.error_message_text {
+  flex-grow: 1;
+  color: coral;
+}
+.close_message {
+  cursor: pointer;
+  color: darkred;
+  font-size: 25px;
+}

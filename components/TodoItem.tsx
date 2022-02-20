@@ -1,25 +1,32 @@
 import { FC, KeyboardEventHandler, useState } from "react";
 import { TodoItem as TodoItemType } from "../types/TodoItem.type";
-import styles from '../styles/TodoItem.module.css';
+import styles from "../styles/TodoItem.module.css";
+import classnames from "classnames";
 
 interface Props {
-  todoItem: TodoItemType
-  toggleIsCompleted: (todoId: number) => void
-  deleteTodo: (todoId: number) => void
-  updateTodoLabel: (e: React.ChangeEvent<HTMLInputElement>, todoId: number) => void
-  submitTodoLabel: (todoId: number, label:string) => void
+  todoItem: TodoItemType;
+  toggleIsCompleted: (todoId: number) => void;
+  deleteTodo: (todoId: number) => void;
+  updateTodoLabel: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    todoId: number
+  ) => void;
+  submitTodoLabel: (todoId: number, label: string) => void;
 }
 
 const TodoItem: FC<Props> = (props) => {
   const [isEditing, setIsEditing] = useState(false);
 
-  const todoLabelKeyDown = (e:React.KeyboardEvent<HTMLInputElement>, todoId:number) => {
-    if(e.key !== 'Enter'){
+  const todoLabelKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    todoId: number
+  ) => {
+    if (e.key !== "Enter") {
       return;
     }
     e.currentTarget.blur();
     props.submitTodoLabel(todoId, e.currentTarget.value);
-  }
+  };
 
   return (
     <li className={isEditing ? styles.single_todo_editing : styles.single_todo}>
@@ -27,32 +34,46 @@ const TodoItem: FC<Props> = (props) => {
         <input
           id={`completed_toggle_${props.todoItem.id}`}
           type="checkbox"
-          onChange={e => props.toggleIsCompleted(props.todoItem.id)}
-          checked={props.todoItem.is_completed} />
-        <label htmlFor={`completed_toggle_${props.todoItem.id}`} data-test-id="completed_toggle"></label>
+          onChange={() => props.toggleIsCompleted(props.todoItem.id)}
+          checked={props.todoItem.is_completed}
+        />
+        <label
+          htmlFor={`completed_toggle_${props.todoItem.id}`}
+          data-test-id="completed_toggle"
+        ></label>
       </div>
-      {!isEditing ?
+      {!isEditing ? (
         <div className={styles.todo_right_container}>
           <label
             onDoubleClick={() => setIsEditing(!isEditing)}
             data-test-id="todo_main_label"
-            className={`${styles.todo_main_label} ${props.todoItem.is_completed ? styles.todo_main_label_completed : ''}`}>{props.todoItem.label}</label>
+            className={classnames({
+              [styles.todo_main_label]: true,
+              [styles.todo_main_label_completed]: props.todoItem.is_completed,
+            })}
+          >
+            {props.todoItem.label}
+          </label>
           <button
             data-test-id="delete_todo"
             className={styles.delete_todo}
-            onClick={e => props.deleteTodo(props.todoItem.id)}></button>
+            onClick={(e) => props.deleteTodo(props.todoItem.id)}
+          ></button>
         </div>
-        : <input
+      ) : (
+        <input
           autoFocus
           type="text"
           data-test-id="todo_main_label_input"
           className={styles.todo_main_label_input}
           value={props.todoItem.label}
           onBlur={() => setIsEditing(!isEditing)}
-          onKeyDown={e => todoLabelKeyDown(e, props.todoItem.id)}
-          onChange={e => props.updateTodoLabel(e, props.todoItem.id)} />}
+          onKeyDown={(e) => todoLabelKeyDown(e, props.todoItem.id)}
+          onChange={(e) => props.updateTodoLabel(e, props.todoItem.id)}
+        />
+      )}
     </li>
-  )
-}
+  );
+};
 
 export default TodoItem;
