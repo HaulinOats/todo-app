@@ -21,9 +21,6 @@ const Todo: FC<Props> = ({}) => {
     setAllSelected(
       JSON.parse(localStorage.getItem("allSelected") as string) || false
     );
-  }, []);
-
-  useEffect(() => {
     fetch("/api/todos", { method: "GET" })
       .then((res) => res.json())
       .then((data) => setTodos(data))
