@@ -271,7 +271,7 @@ const Todo: FC<Props> = ({ activeFilter }) => {
                 ? styles.right_cont_hidden
                 : ""
             }`}
-            onClick={(e) => clearCompletedTodos()}
+            onClick={() => clearCompletedTodos()}
           >
             <a>Clear Completed</a>
           </span>

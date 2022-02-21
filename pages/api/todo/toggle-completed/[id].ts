@@ -4,7 +4,6 @@ import type { NextApiHandler } from "next";
 const prisma = new PrismaClient();
 
 const handler: NextApiHandler = async (req, res) => {
-  // const todoId = req.query.id as number;
   const todoId = req.query.id;
   const { is_completed } = req.body;
   const newTodo = await prisma.todo.update({
