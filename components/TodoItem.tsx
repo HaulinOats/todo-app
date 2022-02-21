@@ -1,11 +1,14 @@
-import { FC, KeyboardEventHandler, useState } from "react";
+import { ChangeEventHandler, FC, useState } from "react";
 import { TodoItem as TodoItemType } from "../types/TodoItem.type";
 import styles from "../styles/TodoItem.module.css";
 import classnames from "classnames";
 
 interface Props {
   todoItem: TodoItemType;
-  toggleIsCompleted: (todoId: number) => void;
+  toggleIsCompleted: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    todoId: number
+  ) => void;
   deleteTodo: (todoId: number) => void;
   updateTodoLabel: (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -29,12 +32,17 @@ const TodoItem: FC<Props> = (props) => {
   };
 
   return (
-    <li className={isEditing ? styles.single_todo_editing : styles.single_todo}>
+    <li
+      className={classnames({
+        [styles.single_todo]: true,
+        [styles.single_todo_editing]: isEditing,
+      })}
+    >
       <div className={styles.completed_toggle}>
         <input
           id={`completed_toggle_${props.todoItem.id}`}
           type="checkbox"
-          onChange={() => props.toggleIsCompleted(props.todoItem.id)}
+          onChange={(e) => props.toggleIsCompleted(e, props.todoItem.id)}
           checked={props.todoItem.is_completed}
         />
         <label

@@ -1,4 +1,10 @@
-import { FC, useState, useEffect, KeyboardEventHandler } from "react";
+import {
+  FC,
+  useState,
+  useEffect,
+  KeyboardEventHandler,
+  ChangeEventHandler,
+} from "react";
 import styles from "../styles/TodoList.module.css";
 import TodoItem from "./TodoItem";
 import ErrorMessage from "./ErrorMessage";
@@ -23,7 +29,7 @@ const Todo: FC<Props> = ({}) => {
     );
     fetch("/api/todos", { method: "GET" })
       .then((res) => res.json())
-      .then((data) => setTodos(data))
+      .then((allTodos) => setTodos(allTodos))
       .catch((err) => setErrorMessage(err.toString()));
   }, []);
 
@@ -42,7 +48,7 @@ const Todo: FC<Props> = ({}) => {
       return;
     }
 
-    fetch("/api/todos", {
+    fetch("/api/todo", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,61 +59,51 @@ const Todo: FC<Props> = ({}) => {
     })
       .then((res) => res.json())
       .then((newTodo) => {
+        console.log(newTodo);
         setTodos([...todos, newTodo]);
+        target.value = "";
       })
       .catch((err) => setErrorMessage(err.toString()));
-
-    target.value = "";
   };
 
   const deleteTodo = (todoId: number): void => {
-    fetch("/api/todos", {
+    fetch(`/api/todo/${todoId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        todoId,
-      }),
     })
       .then((res) => res.json())
-      .then((deletedTodo) => {
-        setTodos(todos.filter((todo) => todo.id !== deletedTodo.id));
+      .then((todoId) => {
+        setTodos(todos.filter((todo) => todo.id !== todoId));
       })
       .catch((err) => setErrorMessage(err.toString()));
   };
 
-  const toggleIsCompleted = (todoId: number): void => {
-    fetch("/api/todos", {
+  const toggleIsCompleted = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    todoId: number
+  ): void => {
+    const is_completed = e.currentTarget.checked;
+    fetch(`/api/todo/toggle-completed/${todoId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        updateType: "toggleIsCompleted",
-        id: todoId,
+        is_completed: is_completed,
       }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        //if response is empty object, inform user todo wasn't found
-        if (data.queryError) {
-          setErrorMessage(data.queryError);
-          return;
-        }
-
-        //replace todo with updated todo from server
-        const todo = console.log(data);
-        console.log("todos (before):", JSON.parse(JSON.stringify(todos)));
+      .then((updatedTodo) => {
+        console.log({ updatedTodo });
         let tempTodos = [...todos];
-        tempTodos.forEach((todo) => {
-          if (todo.id === data.id) {
-            //doesn't work
-            // todo = data;
-            todo.is_completed = data.is_completed;
+        tempTodos.some((todo) => {
+          if (todo.id === todoId) {
+            todo.is_completed = is_completed;
+            return;
           }
         });
-        console.log("todos (after):", JSON.parse(JSON.stringify(tempTodos)));
         setTodos(tempTodos);
       })
       .catch((err) => setErrorMessage(err.toString()));
@@ -132,23 +128,21 @@ const Todo: FC<Props> = ({}) => {
   };
 
   const submitTodoLabel = (todoId: number, label: string): void => {
-    fetch("/api/todos", {
+    fetch(`/api/todo/update-label/${todoId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        updateType: "updateLabel",
-        id: todoId,
-        label,
+        label: label,
       }),
     })
       .then((res) => res.json())
-      .then((updatedTodo) => {
+      .then(() => {
         let tempTodos = [...todos];
         tempTodos.some((todo) => {
-          if (todo.id === updatedTodo.id) {
-            todo = updatedTodo;
+          if (todo.id === todoId) {
+            todo.label = label;
             return;
           }
         });
@@ -171,12 +165,25 @@ const Todo: FC<Props> = ({}) => {
   };
 
   const toggleSelectAll = () => {
-    let tempTodos = [...todos];
-    tempTodos.forEach((todo) => {
-      todo.is_completed = !allSelected;
-    });
-    setAllSelected(!allSelected);
-    setTodos(tempTodos);
+    fetch("/api/todos/toggle-completed", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isAllSelected: !allSelected,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        let tempTodos = [...todos];
+        tempTodos.forEach((todo) => {
+          todo.is_completed = !allSelected;
+        });
+        setAllSelected(!allSelected);
+        setTodos(tempTodos);
+      })
+      .catch((err) => setErrorMessage(err.toString()));
   };
 
   const closeErrorMessage = (): void => {
