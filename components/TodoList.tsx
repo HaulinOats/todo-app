@@ -1,45 +1,36 @@
-import {
-  FC,
-  useState,
-  useEffect,
-  KeyboardEventHandler,
-  ChangeEventHandler,
-} from "react";
+import { FC, useState, useEffect, KeyboardEventHandler } from "react";
 import styles from "../styles/TodoList.module.css";
 import TodoItem from "./TodoItem";
 import ErrorMessage from "./ErrorMessage";
 import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
 import classnames from "classnames";
+import Link from "next/link";
 
-interface Props {}
+export type Filter = "all" | "active" | "completed";
 
-const Todo: FC<Props> = ({}) => {
+interface Props {
+  activeFilter: string;
+}
+
+const Todo: FC<Props> = ({ activeFilter }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
   const [todos, setTodos] = useState<TodoItemType[]>([]);
   const [allSelected, setAllSelected] = useState(false);
-  const [todoView, setTodoView] = useState("all");
 
   //get state from localStorage on mount
   useEffect(() => {
-    setTodoView((localStorage.getItem("todoView") as string) || "all");
-    setAllSelected(
-      JSON.parse(localStorage.getItem("allSelected") as string) || false
-    );
     fetch("/api/todos", { method: "GET" })
       .then((res) => res.json())
-      .then((allTodos) => setTodos(allTodos))
+      .then((allTodos) => {
+        setTodos(allTodos);
+        setAllSelected(
+          allTodos.every((todo: TodoItemType) => todo.is_completed)
+        );
+      })
       .catch((err) => setErrorMessage(err.toString()));
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("todoView", todoView);
-  }, [todoView]);
-
-  useEffect(() => {
-    localStorage.setItem("allSelected", JSON.stringify(allSelected));
-  }, [allSelected]);
 
   const addTodo: KeyboardEventHandler<HTMLInputElement> = (e) => {
     const target = e.currentTarget;
@@ -59,7 +50,6 @@ const Todo: FC<Props> = ({}) => {
     })
       .then((res) => res.json())
       .then((newTodo) => {
-        console.log(newTodo);
         setTodos([...todos, newTodo]);
         target.value = "";
       })
@@ -95,8 +85,7 @@ const Todo: FC<Props> = ({}) => {
       }),
     })
       .then((res) => res.json())
-      .then((updatedTodo) => {
-        console.log({ updatedTodo });
+      .then(() => {
         let tempTodos = [...todos];
         tempTodos.some((todo) => {
           if (todo.id === todoId) {
@@ -110,7 +99,17 @@ const Todo: FC<Props> = ({}) => {
   };
 
   const clearCompletedTodos = () => {
-    setTodos(todos.filter((todo) => !todo.is_completed));
+    fetch(`/api/todos/clear-completed`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setTodos(todos.filter((todo) => !todo.is_completed));
+      })
+      .catch((err) => setErrorMessage(err.toString()));
   };
 
   const updateTodoLabel = (
@@ -151,8 +150,8 @@ const Todo: FC<Props> = ({}) => {
       .catch((err) => setErrorMessage(err.toString()));
   };
 
-  const todoViewFilter = (todo: TodoItemType) => {
-    switch (todoView) {
+  const activeFilterFilter = (todo: TodoItemType) => {
+    switch (activeFilter) {
       case "all":
         return todo;
       case "active":
@@ -190,6 +189,8 @@ const Todo: FC<Props> = ({}) => {
     setErrorMessage(undefined);
   };
 
+  const todoFilteredLength = todos.filter((todo) => !todo.is_completed).length;
+
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>
@@ -199,11 +200,12 @@ const Todo: FC<Props> = ({}) => {
           <p
             data-test-id="new_todo_selectAll"
             onClick={toggleSelectAll}
-            className={`${styles.new_todo_selectAll} ${
-              todos.every((todo) => todo.is_completed)
-                ? styles.new_todo_selectAll_active
-                : ""
-            }`}
+            className={classnames({
+              [styles.new_todo_selectAll]: true,
+              [styles.new_todo_selectAll_active]: todos.every(
+                (todo) => todo.is_completed
+              ),
+            })}
           >
             &#10095;
           </p>
@@ -216,7 +218,7 @@ const Todo: FC<Props> = ({}) => {
           />
         </header>
         <ul className={styles.todo_list}>
-          {todos.filter(todoViewFilter).map((todo) => (
+          {todos.filter(activeFilterFilter).map((todo) => (
             <TodoItem
               {...{
                 key: todo.id,
@@ -231,39 +233,36 @@ const Todo: FC<Props> = ({}) => {
         </ul>
         <footer className={styles.footer}>
           <span className={styles.left_cont}>
-            {todos.filter((todo) => !todo.is_completed).length} item
-            {todos.filter((todo) => !todo.is_completed).length !== 1
-              ? "s"
-              : "\u00A0"}{" "}
-            left
+            {todoFilteredLength} item
+            {todoFilteredLength !== 1 ? "s" : "\u00A0"} left
           </span>
           <ul className={styles.filters}>
             <li
               className={classnames({
-                [styles.active_filter_view]: todoView === "all",
+                [styles.active_filter_view]: activeFilter === "all",
               })}
             >
-              <button type="button" onClick={() => setTodoView("all")}>
-                All
-              </button>
+              <Link href={{ query: { filter: "all" } }}>
+                <a>All</a>
+              </Link>
             </li>
             <li
               className={classnames({
-                [styles.active_filter_view]: todoView === "active",
+                [styles.active_filter_view]: activeFilter === "active",
               })}
             >
-              <button type="button" onClick={() => setTodoView("active")}>
-                Active
-              </button>
+              <Link href={{ query: { filter: "active" } }}>
+                <a>Active</a>
+              </Link>
             </li>
             <li
               className={classnames({
-                [styles.active_filter_view]: todoView === "completed",
+                [styles.active_filter_view]: activeFilter === "completed",
               })}
             >
-              <button type="button" onClick={() => setTodoView("completed")}>
-                Completed
-              </button>
+              <Link href={{ query: { filter: "completed" } }}>
+                <a>Completed</a>
+              </Link>
             </li>
           </ul>
           <span

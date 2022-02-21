@@ -4,13 +4,12 @@ import type { NextApiHandler } from "next";
 const prisma = new PrismaClient();
 
 const handler: NextApiHandler = async (req, res) => {
-  const { isAllSelected } = req.body;
-  const todos = await prisma.todo.updateMany({
-    data: {
-      is_completed: isAllSelected,
+  const deletedTodos = await prisma.todo.deleteMany({
+    where: {
+      is_completed: true,
     },
   });
-  res.json(todos);
+  res.json(deletedTodos);
 };
 
 export default handler;

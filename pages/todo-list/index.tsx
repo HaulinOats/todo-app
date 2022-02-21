@@ -1,20 +1,23 @@
-import { PrismaClient } from '@prisma/client';
-import type { NextPage } from 'next';
-import TodoList from '../../components/TodoList';
-import MainLayout from '../../layouts/MainLayout';
-import { TodoItem as TodoItemType } from '../../types/TodoItem.type';
+import type { NextPage } from "next";
+import { useRouter } from "next/router";
+import TodoList, { Filter } from "../../components/TodoList";
+import MainLayout from "../../layouts/MainLayout";
+import { TodoItem as TodoItemType } from "../../types/TodoItem.type";
 
 interface Props {
-  todos:TodoItemType[]
+  todos: TodoItemType[];
 }
 
 const TodoListMain: NextPage<Props> = () => {
+  const router = useRouter();
+  const filter = (router.query.filter as Filter) || "all";
+
   return (
     <MainLayout pageTitle="Todo List - Main Page">
-      <TodoList />
+      <TodoList activeFilter={filter} />
     </MainLayout>
-  )
-}
+  );
+};
 
 //Leaving these commented for code review discussion
 

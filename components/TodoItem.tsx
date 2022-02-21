@@ -17,7 +17,13 @@ interface Props {
   submitTodoLabel: (todoId: number, label: string) => void;
 }
 
-const TodoItem: FC<Props> = (props) => {
+const TodoItem: FC<Props> = ({
+  todoItem,
+  toggleIsCompleted,
+  deleteTodo,
+  updateTodoLabel,
+  submitTodoLabel,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const todoLabelKeyDown = (
@@ -28,7 +34,7 @@ const TodoItem: FC<Props> = (props) => {
       return;
     }
     e.currentTarget.blur();
-    props.submitTodoLabel(todoId, e.currentTarget.value);
+    submitTodoLabel(todoId, e.currentTarget.value);
   };
 
   return (
@@ -40,13 +46,13 @@ const TodoItem: FC<Props> = (props) => {
     >
       <div className={styles.completed_toggle}>
         <input
-          id={`completed_toggle_${props.todoItem.id}`}
+          id={`completed_toggle_${todoItem.id}`}
           type="checkbox"
-          onChange={(e) => props.toggleIsCompleted(e, props.todoItem.id)}
-          checked={props.todoItem.is_completed}
+          onChange={(e) => toggleIsCompleted(e, todoItem.id)}
+          checked={todoItem.is_completed}
         />
         <label
-          htmlFor={`completed_toggle_${props.todoItem.id}`}
+          htmlFor={`completed_toggle_${todoItem.id}`}
           data-test-id="completed_toggle"
         ></label>
       </div>
@@ -57,15 +63,15 @@ const TodoItem: FC<Props> = (props) => {
             data-test-id="todo_main_label"
             className={classnames({
               [styles.todo_main_label]: true,
-              [styles.todo_main_label_completed]: props.todoItem.is_completed,
+              [styles.todo_main_label_completed]: todoItem.is_completed,
             })}
           >
-            {props.todoItem.label}
+            {todoItem.label}
           </label>
           <button
             data-test-id="delete_todo"
             className={styles.delete_todo}
-            onClick={(e) => props.deleteTodo(props.todoItem.id)}
+            onClick={(e) => deleteTodo(todoItem.id)}
           ></button>
         </div>
       ) : (
@@ -74,10 +80,10 @@ const TodoItem: FC<Props> = (props) => {
           type="text"
           data-test-id="todo_main_label_input"
           className={styles.todo_main_label_input}
-          value={props.todoItem.label}
+          value={todoItem.label}
           onBlur={() => setIsEditing(!isEditing)}
-          onKeyDown={(e) => todoLabelKeyDown(e, props.todoItem.id)}
-          onChange={(e) => props.updateTodoLabel(e, props.todoItem.id)}
+          onKeyDown={(e) => todoLabelKeyDown(e, todoItem.id)}
+          onChange={(e) => updateTodoLabel(e, todoItem.id)}
         />
       )}
     </li>
