@@ -7,7 +7,7 @@ const handler: NextApiHandler = async (req, res) => {
   const { isAllSelected } = req.body;
   const todos = await prisma.todo.updateMany({
     data: {
-      is_completed: isAllSelected,
+      isCompleted: isAllSelected,
     },
   });
   res.json(todos);

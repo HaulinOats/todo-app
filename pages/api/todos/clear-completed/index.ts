@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const handler: NextApiHandler = async (_req, res) => {
   const deletedTodos = await prisma.todo.deleteMany({
     where: {
-      is_completed: true,
+      isCompleted: true,
     },
   });
   res.json(deletedTodos);

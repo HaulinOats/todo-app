@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 
 //take note to use NextApiHandler
 const handler: NextApiHandler = async (req, res) => {
-  const todoId = req.query.id;
+  const { id } = req.query;
   const deletedTodo = await prisma.todo.delete({
     where: {
-      id: Number(todoId),
+      id: Number(id),
     },
   });
   res.json(deletedTodo.id);

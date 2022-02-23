@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const handler: NextApiHandler = async (req, res) => {
   const todoId = req.query.id;
   const { label } = req.body;
-  const newTodo = await prisma.todo.update({
+  const updatedTodo = await prisma.todo.update({
     where: {
       id: Number(todoId),
     },
@@ -14,7 +14,7 @@ const handler: NextApiHandler = async (req, res) => {
       label: label,
     },
   });
-  res.json(newTodo);
+  res.json(updatedTodo);
 };
 
 export default handler;

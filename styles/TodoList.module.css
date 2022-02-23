@@ -108,6 +108,15 @@
 .left_cont {
   cursor: default;
 }
+.right_cont button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
 .right_cont_hidden {
   visibility: hidden;
 }

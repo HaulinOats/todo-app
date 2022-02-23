@@ -39,6 +39,7 @@ const TodoItem: FC<Props> = ({
 
   return (
     <li
+      data-test-id="todo_item"
       className={classnames({
         [styles.single_todo]: true,
         [styles.single_todo_editing]: isEditing,
@@ -46,10 +47,11 @@ const TodoItem: FC<Props> = ({
     >
       <div className={styles.completed_toggle}>
         <input
+          data-test-id="todo_item_toggle"
           id={`completed_toggle_${todoItem.id}`}
           type="checkbox"
           onChange={(e) => toggleIsCompleted(e, todoItem.id)}
-          checked={todoItem.is_completed}
+          checked={todoItem.isCompleted}
         />
         <label
           htmlFor={`completed_toggle_${todoItem.id}`}
@@ -63,7 +65,7 @@ const TodoItem: FC<Props> = ({
             data-test-id="todo_main_label"
             className={classnames({
               [styles.todo_main_label]: true,
-              [styles.todo_main_label_completed]: todoItem.is_completed,
+              [styles.todo_main_label_completed]: todoItem.isCompleted,
             })}
           >
             {todoItem.label}
@@ -71,7 +73,7 @@ const TodoItem: FC<Props> = ({
           <button
             data-test-id="delete_todo"
             className={styles.delete_todo}
-            onClick={(e) => deleteTodo(todoItem.id)}
+            onClick={() => deleteTodo(todoItem.id)}
           ></button>
         </div>
       ) : (

@@ -8,8 +8,27 @@ datasource db {
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
+model User {
+  id           Int      @id @default(autoincrement())
+  role         Role     @default(USER)
+  githubAuthId String   @unique @db.VarChar(15)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  todos        Todo[]
+
+  @@map("users")
+}
+
 model Todo {
-  id           Int     @id @default(autoincrement())
-  label        String  @db.VarChar(255)
-  is_completed Boolean @default(false)
+  id          Int     @id @default(autoincrement())
+  label       String  @db.VarChar(255)
+  isCompleted Boolean @default(false) @map("is_completed")
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int     @map("user_id")
+
+  @@map("todos")
+}
+
+enum Role {
+  ADMIN
+  USER
 }

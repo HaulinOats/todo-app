@@ -1,9 +1,9 @@
-import Head from 'next/head'
-import Header from '../components/Header';
-import styles from '../styles/MainLayout.module.css'
+import Head from "next/head";
+import Header from "../components/Header";
+import styles from "../styles/MainLayout.module.css";
 
 interface LayoutProps {
-  pageTitle: string
+  pageTitle: string;
 }
 
 const MainLayout: React.FC<LayoutProps> = ({ pageTitle, children }) => {
@@ -14,12 +14,10 @@ const MainLayout: React.FC<LayoutProps> = ({ pageTitle, children }) => {
       </Head>
       <Header />
       <div className={styles.container}>
-        <main className={styles.main}>
-          {children}
-        </main>
+        <main className={styles.main}>{children}</main>
       </div>
     </>
-  )
-}
+  );
+};
 
 export default MainLayout;

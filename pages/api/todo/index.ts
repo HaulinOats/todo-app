@@ -5,11 +5,12 @@ const prisma = new PrismaClient();
 
 //take note to use NextApiHandler
 const handler: NextApiHandler = async (req, res) => {
-  const { label, is_completed } = req.body;
+  const { label, isCompleted, userId } = req.body;
   const newTodo = await prisma.todo.create({
     data: {
       label: label,
-      is_completed: is_completed,
+      isCompleted: isCompleted,
+      userId: userId,
     },
   });
   res.json(newTodo);

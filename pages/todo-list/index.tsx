@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import TodoList, { Filter } from "../../components/TodoList";
 import MainLayout from "../../layouts/MainLayout";
@@ -9,12 +10,17 @@ interface Props {
 }
 
 const TodoListMain: NextPage<Props> = () => {
+  const { data: session } = useSession();
   const router = useRouter();
   const filter = (router.query.filter as Filter) || "all";
 
   return (
     <MainLayout pageTitle="Todo List - Main Page">
-      <TodoList activeFilter={filter} />
+      {session ? (
+        <TodoList activeFilter={filter} />
+      ) : (
+        <p>You must be logged in to access this page.</p>
+      )}
     </MainLayout>
   );
 };

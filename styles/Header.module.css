@@ -1,23 +1,46 @@
 .header {
-  padding:5px;
-  display:flex;
-  align-items:center;
+  padding: 5px;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  background:black;
-  color:white;
+  background: black;
+  color: white;
 }
 .header h1 {
-  margin:0;
-  font-size:20px;
+  margin: 0;
+  font-size: 20px;
 }
 .header ul {
-  list-style-type:none;
+  list-style-type: none;
 }
 .header ul li {
-  display:inline-block;
-  padding:0 10px;
-  border-left:solid thin white;
+  display: inline-block;
+  padding: 0 10px;
+  border-left: solid thin white;
 }
 .header ul li:first-child {
-  border:none;
+  border: none;
+}
+.sign_in,
+.sign_out {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  margin-left: 8px;
+}
+.sign_in {
+  color: green;
+}
+.sign_in:hover {
+  color: lightgreen;
+}
+.sign_out {
+  color: red;
+}
+.sign_out:hover {
+  color: coral;
 }

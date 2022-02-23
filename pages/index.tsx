@@ -1,14 +1,12 @@
-import { PrismaClient } from '@prisma/client';
-import type { NextPage } from 'next'
-import MainLayout from '../layouts/MainLayout'
+import type { NextPage } from "next";
+import MainLayout from "../layouts/MainLayout";
 
-const Home: NextPage = (props) => {
-  console.log({props});
+const Home: NextPage = () => {
   return (
     <MainLayout pageTitle="Todo List - Homepage">
       <h1>Todo App Homepage</h1>
     </MainLayout>
-  )
-}
+  );
+};
 
 export default Home;
