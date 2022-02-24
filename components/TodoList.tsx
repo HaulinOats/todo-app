@@ -144,10 +144,14 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     })
       .then((res) => res.json())
       .then((updatedTodo) => {
-        const todoIdx = todos.findIndex((todo) => todo.id === todoId);
-        const tempTodos = [...todos];
-        tempTodos[todoIdx].label = label;
-        setTodos(tempTodos);
+        setTodos(
+          todos.map((todo) => {
+            if (todo.id === todoId) {
+              return updatedTodo;
+            }
+            return todo;
+          })
+        );
       })
       .catch((err) => setErrorMessage(err.toString()));
   };
@@ -196,6 +200,10 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>
+      {/* Is optional chaining ok here since page won't load without session? */}
+      <p className={styles.todo_list_user_text}>
+        Todo's For {session?.user.name}
+      </p>
       <ErrorMessage {...{ error: errorMessage, closeErrorMessage }} />
       <div className={styles.todo_list_main}>
         <header className={styles.header}>

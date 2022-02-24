@@ -19,7 +19,9 @@ const TodoListMain: NextPage<Props> = () => {
       {session ? (
         <TodoList activeFilter={filter} />
       ) : (
-        <p>You must be logged in to access this page.</p>
+        <p data-test-id="inaccessible">
+          You must be logged in to access this page.
+        </p>
       )}
     </MainLayout>
   );

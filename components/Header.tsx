@@ -23,7 +23,11 @@ const Header: React.FC = () => {
           {!session && (
             <>
               <li>
-                <button className={styles.sign_in} onClick={() => signIn()}>
+                <button
+                  data-test-id="sign_in"
+                  className={styles.sign_in}
+                  onClick={() => signIn()}
+                >
                   Sign In
                 </button>
               </li>
@@ -39,7 +43,11 @@ const Header: React.FC = () => {
               </li>
               <li>
                 <span>{session.user.name}</span>
-                <button className={styles.sign_out} onClick={() => signOut()}>
+                <button
+                  data-test-id="sign_out"
+                  className={styles.sign_out}
+                  onClick={() => signOut()}
+                >
                   Sign Out
                 </button>
               </li>
