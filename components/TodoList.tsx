@@ -5,7 +5,6 @@ import ErrorMessage from "./ErrorMessage";
 import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
 import classnames from "classnames";
 import Link from "next/link";
-import { List } from "immutable";
 import { useSession } from "next-auth/react";
 
 export type Filter = "all" | "active" | "completed";
@@ -19,7 +18,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
-  const [todos, setTodos] = useState(List<TodoItemType>([]));
+  const [todos, setTodos] = useState<TodoItemType[]>([]);
   const [allSelected, setAllSelected] = useState(false);
 
   useEffect(() => {
@@ -65,7 +64,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     })
       .then((res) => res.json())
       .then((newTodo) => {
-        setTodos(List(todos).push(newTodo));
+        setTodos([...todos, newTodo]);
         target.value = "";
       })
       .catch((err) => setErrorMessage(err.toString()));
@@ -80,8 +79,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     })
       .then((res) => res.json())
       .then(() => {
-        const todoIdx = todos.findIndex((todo) => todo.id === todoId);
-        setTodos(List(todos).delete(todoIdx));
+        setTodos(todos.filter((todo) => todo.id !== todoId));
       })
       .catch((err) => setErrorMessage(err.toString()));
   };
@@ -103,8 +101,9 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
       .then((res) => res.json())
       .then((updatedTodo) => {
         const todoIdx = todos.findIndex((todo) => todo.id === todoId);
-        setTodos(List(todos).set(todoIdx, updatedTodo));
-        //HOW DO I UPDATE SINGLE PROPERTY OF SINGLE LIST OBJECT WITH IMMUTABLE?
+        const tempTodos = [...todos];
+        tempTodos[todoIdx].isCompleted = isCompleted;
+        setTodos(tempTodos);
       })
       .catch((err) => setErrorMessage(err.toString()));
   };
@@ -128,15 +127,9 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     todoId: number
   ): void => {
     const todoIdx = todos.findIndex((todo) => todo.id === todoId);
-    //HOW DO I UPDATE SINGLE PROPERTY OF SINGLE LIST OBJECT WITH IMMUTABLE?
-    // let tempTodos = [...todos];
-    // tempTodos.some((todo) => {
-    //   if (todo.id === todoId) {
-    //     todo.label = e.currentTarget.value;
-    //     return;
-    //   }
-    // });
-    // setTodos(tempTodos);
+    const tempTodos = [...todos];
+    tempTodos[todoIdx].label = e.currentTarget.value;
+    setTodos(tempTodos);
   };
 
   const submitTodoLabel = (todoId: number, label: string): void => {
@@ -152,8 +145,9 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
       .then((res) => res.json())
       .then((updatedTodo) => {
         const todoIdx = todos.findIndex((todo) => todo.id === todoId);
-        setTodos(List(todos).set(todoIdx, updatedTodo));
-        //HOW DO I UPDATE SINGLE PROPERTY OF SINGLE LIST OBJECT WITH IMMUTABLE?
+        const tempTodos = [...todos];
+        tempTodos[todoIdx].label = label;
+        setTodos(tempTodos);
       })
       .catch((err) => setErrorMessage(err.toString()));
   };
@@ -182,14 +176,13 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
       }),
     })
       .then((res) => res.json())
-      .then((todos) => {
-        //HOW DO I UPDATE SINGLE PROPERTY OF MULTIPLE LIST OBJECTS WITH IMMUTABLE?
-        // let tempTodos = [...todos];
-        // tempTodos.forEach((todo) => {
-        //   todo.isCompleted = !allSelected;
-        // });
-        // setAllSelected(!allSelected);
-        // setTodos(tempTodos);
+      .then(() => {
+        const tempTodos = [...todos];
+        tempTodos.forEach((todo) => {
+          todo.isCompleted = !allSelected;
+        });
+        setAllSelected(!allSelected);
+        setTodos(tempTodos);
       })
       .catch((err) => setErrorMessage(err.toString()));
   };
@@ -198,9 +191,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     setErrorMessage(undefined);
   };
 
-  const todoFilteredLength = List(todos).filter(
-    (todo) => !todo.isCompleted
-  ).size;
+  const todoFilteredLength = todos.filter((todo) => !todo.isCompleted).length;
 
   return (
     <div className={styles.todo_list_outer}>
@@ -282,7 +273,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
           </ul>
           <span
             className={`${styles.right_cont} ${
-              !List(todos).filter((todo) => todo.isCompleted).size
+              !todos.filter((todo) => todo.isCompleted).length
                 ? styles.right_cont_hidden
                 : ""
             }`}

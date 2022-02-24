@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { NextApiHandler } from "next";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +14,7 @@ const handler: NextApiHandler = async (req, res) => {
       },
       orderBy: [
         {
-          id: "asc",
+          createdAt: "asc",
         },
       ],
     });
