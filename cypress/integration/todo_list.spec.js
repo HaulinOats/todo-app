@@ -1,5 +1,3 @@
-// These tests won't work without authorized login. How is this handled with Cypress?
-
 describe("Initial App Load", () => {
   it("successfully loads", () => {
     cy.visit("/todo-list");
