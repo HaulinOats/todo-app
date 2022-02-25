@@ -1,4 +1,5 @@
 import { FC, useState, useEffect, KeyboardEventHandler } from "react";
+import { getErrorMessage } from "../utils/util";
 import styles from "../styles/TodoList.module.css";
 import TodoItem from "./TodoItem";
 import ErrorMessage from "./ErrorMessage";
@@ -24,102 +25,106 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
   useEffect(() => {
     //get todos if session exists
     if (session) {
-      fetch(`/api/todos`, {
+      fetchTodos();
+    }
+  }, []);
+
+  const fetchTodos = async () => {
+    try {
+      const response = await fetch(`/api/todos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: session.user.id,
+          userId: session?.user.id,
         }),
-      })
-        .then((res) => res.json())
-        .then((allTodos) => {
-          setTodos(allTodos);
-          //check if all todos are completed and update allSelected
-          setAllSelected(
-            allTodos.every((todo: TodoItemType) => todo.isCompleted)
-          );
-        })
-        .catch((err) => setErrorMessage(err.toString()));
+      });
+      const resTodos = await response.json();
+      setTodos(resTodos);
+      //check if all todos are completed and update allSelected
+      setAllSelected(resTodos.every((todo: TodoItemType) => todo.isCompleted));
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
     }
-  }, []);
+  };
 
-  const addTodo: KeyboardEventHandler<HTMLInputElement> = (e) => {
+  const addTodo: KeyboardEventHandler<HTMLInputElement> = async (e) => {
     const target = e.currentTarget;
-
     if (e.key !== "Enter" || !target.value.trim().length || !session) {
       return;
     }
 
-    fetch("/api/todo", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        label: target.value,
-        userId: session.user.id,
-      }),
-    })
-      .then((res) => res.json())
-      .then((newTodo) => {
-        setTodos([...todos, newTodo]);
-        target.value = "";
-      })
-      .catch((err) => setErrorMessage(err.toString()));
+    try {
+      const response = await fetch("/api/todo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          label: target.value,
+          userId: session.user.id,
+        }),
+      });
+      const newTodo = await response.json();
+      setTodos([...todos, newTodo]);
+      target.value = "";
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
   };
 
-  const deleteTodo = (todoId: number): void => {
-    fetch(`/api/todo/${todoId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setTodos(todos.filter((todo) => todo.id !== todoId));
-      })
-      .catch((err) => setErrorMessage(err.toString()));
+  const deleteTodo = async (todoId: number) => {
+    try {
+      const response = await fetch(`/api/todo/${todoId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const _deletedTodo = await response.json();
+      setTodos(todos.filter((todo) => todo.id !== todoId));
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
   };
 
-  const toggleIsCompleted = (
+  const toggleIsCompleted = async (
     e: React.ChangeEvent<HTMLInputElement>,
     todoId: number
-  ): void => {
-    const isCompleted = e.currentTarget.checked;
-    fetch(`/api/todo/toggle-completed/${todoId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        isCompleted: isCompleted,
-      }),
-    })
-      .then((res) => res.json())
-      .then((updatedTodo) => {
-        const todoIdx = todos.findIndex((todo) => todo.id === todoId);
-        const tempTodos = [...todos];
-        tempTodos[todoIdx].isCompleted = isCompleted;
-        setTodos(tempTodos);
-      })
-      .catch((err) => setErrorMessage(err.toString()));
+  ) => {
+    try {
+      const response = await fetch(`/api/todo/toggle-completed/${todoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isCompleted: e.currentTarget.checked,
+        }),
+      });
+      const updatedTodo = await response.json();
+      const todoIdx = todos.findIndex((todo) => todo.id === todoId);
+      const tempTodos = [...todos];
+      tempTodos[todoIdx] = updatedTodo;
+      setTodos(tempTodos);
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
   };
 
-  const clearCompletedTodos = () => {
-    fetch(`/api/todos/clear-completed`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setTodos(todos.filter((todo) => !todo.isCompleted));
-      })
-      .catch((err) => setErrorMessage(err.toString()));
+  const clearCompletedTodos = async () => {
+    try {
+      await fetch(`/api/todos/clear-completed`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setTodos(todos.filter((todo) => !todo.isCompleted));
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
   };
 
   const updateTodoLabel = (
@@ -132,28 +137,29 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     setTodos(tempTodos);
   };
 
-  const submitTodoLabel = (todoId: number, label: string): void => {
-    fetch(`/api/todo/update-label/${todoId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        label: label,
-      }),
-    })
-      .then((res) => res.json())
-      .then((updatedTodo) => {
-        setTodos(
-          todos.map((todo) => {
-            if (todo.id === todoId) {
-              return updatedTodo;
-            }
-            return todo;
-          })
-        );
-      })
-      .catch((err) => setErrorMessage(err.toString()));
+  const submitTodoLabel = async (todoId: number, label: string) => {
+    try {
+      const response = await fetch(`/api/todo/update-label/${todoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          label: label,
+        }),
+      });
+      const updatedTodo = await response.json();
+      setTodos(
+        todos.map((todo) => {
+          if (todo.id === todoId) {
+            return updatedTodo;
+          }
+          return todo;
+        })
+      );
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
   };
 
   const activeFilterFilter = (todo: TodoItemType) => {
@@ -169,26 +175,26 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     }
   };
 
-  const toggleSelectAll = () => {
-    fetch("/api/todos/toggle-completed", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        isAllSelected: !allSelected,
-      }),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        const tempTodos = [...todos];
-        tempTodos.forEach((todo) => {
-          todo.isCompleted = !allSelected;
-        });
-        setAllSelected(!allSelected);
-        setTodos(tempTodos);
-      })
-      .catch((err) => setErrorMessage(err.toString()));
+  const toggleSelectAll = async () => {
+    try {
+      await fetch("/api/todos/toggle-completed", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          isAllSelected: !allSelected,
+        }),
+      });
+      const tempTodos = [...todos];
+      tempTodos.forEach((todo) => {
+        todo.isCompleted = !allSelected;
+      });
+      setAllSelected(!allSelected);
+      setTodos(tempTodos);
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
   };
 
   const closeErrorMessage = (): void => {
@@ -200,11 +206,11 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>
-      {/* Is optional chaining ok here since page won't load without session? */}
-      <p className={styles.todo_list_user_text}>
-        Todo's For {session?.user.name}
-      </p>
       <ErrorMessage {...{ error: errorMessage, closeErrorMessage }} />
+      {/* Is optional chaining ok here since page won't load without session? */}
+      <p className={styles.todo_list_user_tab}>
+        Todos For {session?.user.name}
+      </p>
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
           <p
