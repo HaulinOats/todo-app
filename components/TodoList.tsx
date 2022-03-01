@@ -7,9 +7,10 @@ import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
 import classnames from "classnames";
 import { useSession } from "next-auth/react";
 import TodoFilters from "./TodoFilters";
+import { Filter } from "../types/Filter.type";
 
 interface Props {
-  activeFilter: "all" | "active" | "completed";
+  activeFilter: Filter;
 }
 
 const TodoList: FC<Props> = ({ activeFilter }) => {

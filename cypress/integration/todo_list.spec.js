@@ -1,5 +1,5 @@
 describe("Initial App Load", () => {
-  it("Auth0", () => {
+  it("Auth0 login", () => {
     cy.loginByAuth0Api(
       Cypress.env("auth0_username"),
       Cypress.env("auth0_password")

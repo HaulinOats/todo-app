@@ -1,8 +1,9 @@
 import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import TodoList, { Filter } from "../../components/TodoList";
+import TodoList from "../../components/TodoList";
 import MainLayout from "../../layouts/MainLayout";
+import { Filter } from "../../types/Filter.type";
 import { TodoItem as TodoItemType } from "../../types/TodoItem.type";
 
 interface Props {
