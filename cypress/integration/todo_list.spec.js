@@ -1,4 +1,11 @@
 describe("Initial App Load", () => {
+  it("Auth0", () => {
+    cy.loginByAuth0Api(
+      Cypress.env("auth0_username"),
+      Cypress.env("auth0_password")
+    );
+  });
+
   it("successfully loads", () => {
     cy.visit("/todo-list");
   });

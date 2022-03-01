@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 /// <reference types="cypress" />
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
@@ -15,20 +16,27 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-// eslint-disable-next-line no-unused-vars
-module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-}
+
+dotenv.config();
 
 module.exports = (on, config) => {
+  config.env.auth0_username = process.env.AUTH0_USERNAME;
+  config.env.auth0_password = process.env.AUTH0_PASSWORD;
+  config.env.auth0_domain = process.env.REACT_APP_AUTH0_DOMAIN;
+  config.env.auth0_audience = process.env.REACT_APP_AUTH0_AUDIENCE;
+  config.env.auth0_scope = process.env.REACT_APP_AUTH0_SCOPE;
+  config.env.auth0_client_id = process.env.REACT_APP_AUTH0_CLIENTID;
+  config.env.auth0_client_secret = process.env.AUTH0_CLIENT_SECRET;
+
   // ref: https://docs.cypress.io/api/plugins/browser-launch-api.html#Usage
-  on('before:browser:launch', (browser = {}, args) => {
-    if (browser.name === 'chrome') {
-      args.push('--disable-dev-shm-usage')
-      return args
+  on("before:browser:launch", (browser = {}, args) => {
+    if (browser.name === "chrome") {
+      args.push("--disable-dev-shm-usage");
+      return args;
     }
 
-    return args
-  })
-}
+    return args;
+  });
+
+  return config;
+};
