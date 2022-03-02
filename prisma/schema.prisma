@@ -11,7 +11,8 @@ datasource db {
 model User {
   id           Int      @id @default(autoincrement())
   role         Role     @default(USER)
-  githubAuthId String   @unique @db.VarChar(15)
+  name         String   @db.VarChar(255)
+  githubAuthId String?  @unique @db.VarChar(15)
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
   todos        Todo[]
 

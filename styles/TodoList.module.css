@@ -29,13 +29,13 @@
   color: orangered;
   font-size: 18px;
 }
-.todo_list_user_tab {
-  margin: 0;
-  display: inline-block;
-  color: cadetblue;
-  background: white;
-  padding: 10px;
-  box-shadow: -3px -5px 8px -10px black;
+.select_user_container {
+  color: black;
+  padding: 4px 0;
+}
+.select_user_container select {
+  border-radius: 4px;
+  padding: 4px;
 }
 .todo_list_main {
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%), 0 25px 50px 0 rgb(0 0 0 / 10%);

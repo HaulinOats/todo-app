@@ -5,7 +5,6 @@ import TodoItem from "./TodoItem";
 import ErrorMessage from "./ErrorMessage";
 import type { TodoItem as TodoItemType } from "../types/TodoItem.type";
 import classnames from "classnames";
-import { useSession } from "next-auth/react";
 import TodoFilters from "./TodoFilters";
 import { Filter } from "../types/Filter.type";
 
@@ -13,20 +12,46 @@ interface Props {
   activeFilter: Filter;
 }
 
+type TodoListUser = {
+  id: number;
+  name: string;
+};
+
 const TodoList: FC<Props> = ({ activeFilter }) => {
-  const { data: session } = useSession();
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
   );
   const [todos, setTodos] = useState<TodoItemType[]>([]);
   const [allSelected, setAllSelected] = useState(false);
+  const [users, setUsers] = useState<TodoListUser[]>([]);
+  const [currentUser, setCurrentUser] = useState<TodoListUser | undefined>(
+    undefined
+  );
 
   useEffect(() => {
-    //get todos if session exists
-    if (session) {
-      fetchTodos();
-    }
+    getTodoListUsers();
   }, []);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    fetchTodos();
+  }, [currentUser]);
+
+  const getTodoListUsers = async () => {
+    try {
+      const response = await fetch(`/api/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const users = await response.json();
+      setUsers(users);
+      setCurrentUser(users[0]);
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err));
+    }
+  };
 
   const fetchTodos = async () => {
     try {
@@ -36,7 +61,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: session?.user.id,
+          userId: currentUser?.id,
         }),
       });
       const resTodos = await response.json();
@@ -50,7 +75,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
 
   const addTodo: KeyboardEventHandler<HTMLInputElement> = async (e) => {
     const target = e.currentTarget;
-    if (e.key !== "Enter" || !target.value.trim().length || !session) {
+    if (e.key !== "Enter" || !target.value.trim().length) {
       return;
     }
 
@@ -62,7 +87,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
         },
         body: JSON.stringify({
           label: target.value,
-          userId: session.user.id,
+          userId: currentUser?.id,
         }),
       });
       const newTodo = await response.json();
@@ -200,16 +225,27 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
     setErrorMessage(undefined);
   };
 
+  const changeUser: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    const userId = Number(e.currentTarget.value);
+    setCurrentUser(users.find((user) => user.id === userId));
+  };
+
   const todoFilteredLength = todos.filter((todo) => !todo.isCompleted).length;
 
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>
       <ErrorMessage {...{ error: errorMessage, closeErrorMessage }} />
-      {/* Is optional chaining ok here since page won't load without session? */}
-      <p className={styles.todo_list_user_tab}>
-        Todos For {session?.user.name}
-      </p>
+      <div className={styles.select_user_container}>
+        <label>Select User's Todo List:</label>
+        <select onChange={changeUser}>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className={styles.todo_list_main}>
         <header className={styles.header}>
           <p
@@ -254,12 +290,13 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
           </span>
           <TodoFilters activeFilter={activeFilter} />
           <span
-            className={`${styles.right_cont} ${
-              !todos.filter((todo) => todo.isCompleted).length
-                ? styles.right_cont_hidden
-                : ""
-            }`}
-            onClick={() => clearCompletedTodos()}
+            className={classnames({
+              [styles.right_cont]: true,
+              [styles.right_cont_hidden]: !todos.filter(
+                (todo) => todo.isCompleted
+              ).length,
+            })}
+            onClick={clearCompletedTodos}
           >
             <button data-test-id="clear_completed" type="button">
               Clear Completed

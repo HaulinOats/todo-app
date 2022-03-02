@@ -11,19 +11,12 @@ interface Props {
 }
 
 const TodoListMain: NextPage<Props> = () => {
-  const { data: session } = useSession();
   const router = useRouter();
   const filter = (router.query.filter as Filter) || "all";
 
   return (
     <MainLayout pageTitle="Todo List - Main Page">
-      {session ? (
-        <TodoList activeFilter={filter} />
-      ) : (
-        <p data-test-id="inaccessible">
-          You must be logged in to access this page.
-        </p>
-      )}
+      <TodoList activeFilter={filter} />
     </MainLayout>
   );
 };
