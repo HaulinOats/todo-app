@@ -1,8 +1,11 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 const main = async () => {
+  //empty users table
+  await prisma.user.deleteMany();
+  //create default users
   await prisma.user.createMany({
     data: [
       { name: "Brett Connolly" },
@@ -12,4 +15,7 @@ const main = async () => {
   });
 };
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

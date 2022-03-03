@@ -23,6 +23,7 @@ export default NextAuth({
         if (!currUser) {
           await prisma.user.create({
             data: {
+              name: user.name,
               githubAuthId: user.id,
             },
           });

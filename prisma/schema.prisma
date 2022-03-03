@@ -24,7 +24,7 @@ model Todo {
   label       String   @db.VarChar(255)
   isCompleted Boolean  @default(false) @map("is_completed")
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int      @map("user_id")
 
   @@map("todos")

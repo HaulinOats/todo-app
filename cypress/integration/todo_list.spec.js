@@ -1,31 +1,28 @@
-describe("Initial App Load", () => {
+describe("Test Todo List", () => {
+  it("seed db", () => {
+    cy.task("db:seed");
+  });
   it("successfully loads", () => {
-    cy.visit("/todo-list");
+    cy.visit("/todo-list").wait(500);
   });
 
   it("Enter new todos and submit", () => {
     cy.get('[data-test-id="new_todo_input"]')
       .type("New Todo 1{enter}")
+      .wait(250)
       .type("New Todo 2{enter}")
-      .type("New Todo 3{enter}");
+      .wait(250)
+      .type("New Todo 3{enter}")
+      .wait(250);
   });
 
   it("Check that Clear Completed works", () => {
-    //check first todo item that was just created
-    cy.get('[data-test-id="todo_item_toggle"]').eq(0).check();
-
-    cy.get(`[data-test-id="todo_item"]`)
-      .find('input[type="checkbox"]')
-      .should("not.be.checked")
-      .check();
+    cy.get('[data-test-id="todo_item_toggle"]').eq(0).check({ force: true });
 
     cy.get(`[data-test-id="clear_completed"]`).click();
 
     //verify there are no items that are completed
-    cy.url("todo-list?filter=all")
-      .get(`[data-test-id="todo_item"]`)
-      .find('input[type="checkbox"]')
-      .should("not.exist");
+    cy.get(`[data-test-id="todo_item_toggle"]:checked`).should("not.exist");
   });
 
   it("Toggle todo completion", () => {

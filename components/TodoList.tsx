@@ -232,6 +232,8 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
 
   const todoFilteredLength = todos.filter((todo) => !todo.isCompleted).length;
 
+  if (!currentUser) return <div>Loading...</div>;
+
   return (
     <div className={styles.todo_list_outer}>
       <h1 className={styles.title}>todos</h1>

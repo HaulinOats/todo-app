@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
 /// <reference types="cypress" />
+
 // ***********************************************************
 // This example plugins/index.js can be used to load plugins
 //
@@ -17,9 +17,14 @@ import dotenv from "dotenv";
  * @type {Cypress.PluginConfig}
  */
 
-dotenv.config();
-
 module.exports = (on, config) => {
+  on("task", {
+    "db:seed": () => {
+      const seed = require("../../prisma/seed");
+      return true;
+    },
+  });
+
   // ref: https://docs.cypress.io/api/plugins/browser-launch-api.html#Usage
   on("before:browser:launch", (browser = {}, args) => {
     if (browser.name === "chrome") {
