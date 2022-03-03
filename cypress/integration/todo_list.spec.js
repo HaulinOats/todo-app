@@ -1,5 +1,6 @@
 describe("Test Todo List", () => {
   it("Seed db", () => {
+    cy.task("db:teardown");
     cy.task("db:seed");
   });
 

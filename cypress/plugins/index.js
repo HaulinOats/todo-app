@@ -19,6 +19,10 @@
 
 module.exports = (on, config) => {
   on("task", {
+    "db:teardown": () => {
+      const teardown = require("../../prisma/teardown");
+      return true;
+    },
     "db:seed": () => {
       const seed = require("../../prisma/seed");
       return true;
