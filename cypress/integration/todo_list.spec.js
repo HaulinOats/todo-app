@@ -1,9 +1,14 @@
 describe("Test Todo List", () => {
-  it("seed db", () => {
+  it("Seed db", () => {
     cy.task("db:seed");
   });
-  it("successfully loads", () => {
-    cy.visit("/todo-list").wait(500);
+
+  it("Successfully loads todo list page", () => {
+    cy.visit("/todo-list");
+  });
+
+  it("Can select different users", () => {
+    cy.get('[data-test-id="change_user_select"]').select(1).should("exist");
   });
 
   it("Enter new todos and submit", () => {

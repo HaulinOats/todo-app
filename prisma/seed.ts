@@ -4,6 +4,8 @@ const prisma = new PrismaClient();
 
 const main = async () => {
   //empty users table
+  //doesn't always work when testing
+  //need to learn transactions with prisma
   await prisma.user.deleteMany();
   //create default users
   await prisma.user.createMany({

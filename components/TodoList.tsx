@@ -240,7 +240,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
       <ErrorMessage {...{ error: errorMessage, closeErrorMessage }} />
       <div className={styles.select_user_container}>
         <label>Select User's Todo List:</label>
-        <select onChange={changeUser}>
+        <select data-test-id="change_user_select" onChange={changeUser}>
           {users.map((user) => (
             <option key={user.id} value={user.id}>
               {user.name}
