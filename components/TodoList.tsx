@@ -239,7 +239,7 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
       <h1 className={styles.title}>todos</h1>
       <ErrorMessage {...{ error: errorMessage, closeErrorMessage }} />
       <div className={styles.select_user_container}>
-        <label>Select User's Todo List:</label>
+        <label>Select User&lsquo;s Todo List:</label>
         <select data-test-id="change_user_select" onChange={changeUser}>
           {users.map((user) => (
             <option key={user.id} value={user.id}>
@@ -273,8 +273,8 @@ const TodoList: FC<Props> = ({ activeFilter }) => {
         <ul className={styles.todo_list}>
           {todos.filter(activeFilterFilter).map((todo, idx) => (
             <TodoItem
+              key={todo.id}
               {...{
-                key: todo.id,
                 todoItem: todo,
                 todoIdx: idx,
                 toggleIsCompleted,

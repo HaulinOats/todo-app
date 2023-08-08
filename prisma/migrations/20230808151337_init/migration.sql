@@ -4,7 +4,7 @@ CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
-    "role" "Role" NOT NULL DEFAULT E'USER',
+    "role" "Role" NOT NULL DEFAULT 'USER',
     "name" VARCHAR(255) NOT NULL,
     "githubAuthId" VARCHAR(15),
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
