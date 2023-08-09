@@ -3,7 +3,7 @@ import type { NextApiHandler } from "next";
 
 const prisma = new PrismaClient();
 
-const handler: NextApiHandler = async (_req, res) => {
+const handler: NextApiHandler = async (_req:any, res:any) => {
   const users = await prisma.user.findMany({
     select: {
       id: true,
